@@ -17,7 +17,21 @@ const TYPES = [
   { value: "dacha", label: "Дача", description: "Дачный домик", modifier: 0.75, icon: "Trees" },
 ];
 
-const SIZES = [
+const SIZES_HOUSE = [
+  { value: 60, label: "60 м²", description: "Компактная", price: 1800000 },
+  { value: 120, label: "120 м²", description: "Оптимальная", price: 2700000 },
+  { value: 180, label: "180 м²", description: "Просторная", price: 3600000 },
+  { value: 250, label: "250 м²", description: "Большая", price: 4500000 },
+];
+
+const SIZES_BATH = [
+  { value: 20, label: "20 м²", description: "Компактная", price: 1800000 },
+  { value: 40, label: "40 м²", description: "Оптимальная", price: 2700000 },
+  { value: 60, label: "60 м²", description: "Просторная", price: 3600000 },
+  { value: 100, label: "100 м²", description: "Большая", price: 4500000 },
+];
+
+const SIZES_DACHA = [
   { value: 20, label: "20 м²", description: "Компактная", price: 1800000 },
   { value: 40, label: "40 м²", description: "Оптимальная", price: 2700000 },
   { value: 60, label: "60 м²", description: "Просторная", price: 3600000 },
@@ -55,11 +69,17 @@ interface OptionItem {
   icon?: string;
 }
 
+function getSizes(typeValue: string) {
+  if (typeValue === "house") return SIZES_HOUSE;
+  if (typeValue === "bath") return SIZES_BATH;
+  return SIZES_DACHA;
+}
+
 export default function Configurator() {
   const [step, setStep] = useState(0);
   const [config, setConfig] = useState({
     type: TYPES[0],
-    size: SIZES[1],
+    size: SIZES_HOUSE[1],
     floors: FLOORS[0],
     roof: ROOFS[0],
     finish: FINISHES[0],
@@ -154,7 +174,11 @@ export default function Configurator() {
                   <OptionGrid
                     options={TYPES}
                     selected={config.type.value}
-                    onSelect={(opt) => setConfig({ ...config, type: opt as typeof config.type })}
+                    onSelect={(opt) => {
+                      const newType = opt as typeof config.type;
+                      const newSizes = getSizes(String(newType.value));
+                      setConfig({ ...config, type: newType, size: newSizes[1] });
+                    }}
                     renderLabel={(opt) => (
                       <>
                         <Icon name={opt.icon || "Home"} size={28} className="mb-2 text-neutral-700" />
@@ -167,7 +191,7 @@ export default function Configurator() {
 
                 {step === 1 && (
                   <OptionGrid
-                    options={SIZES}
+                    options={getSizes(String(config.type.value))}
                     selected={config.size.value}
                     onSelect={(opt) => setConfig({ ...config, size: opt as typeof config.size })}
                     renderLabel={(opt) => (
