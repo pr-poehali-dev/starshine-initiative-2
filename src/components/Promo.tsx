@@ -1,39 +1,55 @@
-import { useScroll, useTransform, motion } from "framer-motion";
-import { useRef } from "react";
-
 export default function Promo() {
-  const container = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], ["-10vh", "10vh"]);
+  const projects = [
+    {
+      img: "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/c33d56b2-d3ad-4770-9124-314909aa8be6.jpg",
+      label: "Каркасный дом",
+    },
+    {
+      img: "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/f7acd6bb-78da-46fe-b276-17b66de9a050.jpg",
+      label: "Каркасная баня",
+    },
+    {
+      img: "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/f4c6523d-0f81-4f7a-b5e6-2fa3637acb05.jpg",
+      label: "Дача",
+    },
+  ];
 
   return (
-    <div
-      ref={container}
-      className="relative flex items-center justify-center h-screen overflow-hidden"
-      style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
-    >
-      <div className="fixed top-[-10vh] left-0 h-[120vh] w-full">
-        <motion.div style={{ y }} className="relative w-full h-full">
-          <img
-            src="https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/c33d56b2-d3ad-4770-9124-314909aa8be6.jpg"
-            alt="Готовый каркасный дом"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/50" />
-        </motion.div>
+    <section className="bg-white py-16 sm:py-24 px-6" id="projects">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-end mb-10">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 tracking-tight">
+            Наши проекты
+          </h2>
+          <p className="text-neutral-500 text-sm uppercase tracking-wide hidden sm:block">
+            Дома · Бани · Дачи
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {projects.map((p) => (
+            <div key={p.label} className="group relative overflow-hidden">
+              <div className="aspect-[4/5] overflow-hidden">
+                <img
+                  src={p.img}
+                  alt={p.label}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/70 to-transparent">
+                <p className="text-white font-semibold text-lg uppercase tracking-wide">
+                  {p.label}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-neutral-500 text-lg mt-12 max-w-2xl">
+          Каждый проект — это история семьи. Мы строим пространство, в котором хочется жить,
+          отдыхать и встречать гостей.
+        </p>
       </div>
-
-      <h3 className="absolute top-12 right-6 text-white uppercase z-10 text-sm md:text-base lg:text-lg">
-        Наши проекты
-      </h3>
-
-      <p className="absolute bottom-12 right-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-5xl z-10">
-        Каждый дом — это история семьи. Мы строим пространство, в котором хочется жить,
-        растить детей и встречать гостей.
-      </p>
-    </div>
+    </section>
   );
 }
