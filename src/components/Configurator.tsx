@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Icon from "@/components/ui/icon";
+import funcUrls from "../../backend/func2url.json";
 
 const STEPS = [
   { id: "size", title: "Площадь дома" },
@@ -38,6 +39,14 @@ function formatPrice(price: number) {
   return new Intl.NumberFormat("ru-RU").format(Math.round(price / 1000) * 1000) + " ₽";
 }
 
+interface OptionItem {
+  value: string | number;
+  label: string;
+  description: string;
+  price?: number;
+  modifier?: number;
+}
+
 export default function Configurator() {
   const [step, setStep] = useState(0);
   const [config, setConfig] = useState({
@@ -46,6 +55,11 @@ export default function Configurator() {
     roof: ROOFS[0],
     finish: FINISHES[0],
   });
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   const totalPrice =
     config.size.price *
@@ -53,8 +67,39 @@ export default function Configurator() {
     config.roof.modifier *
     config.finish.modifier;
 
-  const next = () => setStep((s) => Math.min(s + 1, STEPS.length));
+  const totalSteps = STEPS.length;
+  const next = () => setStep((s) => Math.min(s + 1, totalSteps));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
+
+  const handleSubmit = async () => {
+    if (!name.trim() || !phone.trim()) {
+      setError("Укажите имя и телефон");
+      return;
+    }
+    setError("");
+    setSending(true);
+    try {
+      const res = await fetch(funcUrls["send-order"], {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          size: config.size.label,
+          floors: config.floors.label,
+          roof: config.roof.label,
+          finish: config.finish.label,
+          price: formatPrice(totalPrice),
+        }),
+      });
+      if (!res.ok) throw new Error("Ошибка отправки");
+      setSent(true);
+    } catch {
+      setError("Не удалось отправить. Попробуйте позже.");
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <section className="bg-neutral-100 py-16 sm:py-24 px-6" id="configurator">
@@ -80,7 +125,7 @@ export default function Configurator() {
 
         <div className="min-h-[340px] relative">
           <AnimatePresence mode="wait">
-            {step < STEPS.length ? (
+            {step < totalSteps ? (
               <motion.div
                 key={step}
                 initial={{ opacity: 0, x: 40 }}
@@ -89,19 +134,19 @@ export default function Configurator() {
                 transition={{ duration: 0.3 }}
               >
                 <h3 className="text-sm uppercase tracking-wide text-neutral-500 mb-6">
-                  Шаг {step + 1} из {STEPS.length} — {STEPS[step].title}
+                  Шаг {step + 1} из {totalSteps} — {STEPS[step].title}
                 </h3>
 
                 {step === 0 && (
                   <OptionGrid
                     options={SIZES}
                     selected={config.size.value}
-                    onSelect={(opt) => setConfig({ ...config, size: opt })}
+                    onSelect={(opt) => setConfig({ ...config, size: opt as typeof config.size })}
                     renderLabel={(opt) => (
                       <>
                         <span className="text-2xl font-bold">{opt.label}</span>
                         <span className="text-neutral-500">{opt.description}</span>
-                        <span className="text-sm text-neutral-400 mt-1">от {formatPrice(opt.price)}</span>
+                        <span className="text-sm text-neutral-400 mt-1">от {formatPrice(opt.price || 0)}</span>
                       </>
                     )}
                   />
@@ -111,7 +156,7 @@ export default function Configurator() {
                   <OptionGrid
                     options={FLOORS}
                     selected={config.floors.value}
-                    onSelect={(opt) => setConfig({ ...config, floors: opt })}
+                    onSelect={(opt) => setConfig({ ...config, floors: opt as typeof config.floors })}
                     renderLabel={(opt) => (
                       <>
                         <span className="text-2xl font-bold">{opt.label}</span>
@@ -125,7 +170,7 @@ export default function Configurator() {
                   <OptionGrid
                     options={ROOFS}
                     selected={config.roof.value}
-                    onSelect={(opt) => setConfig({ ...config, roof: opt })}
+                    onSelect={(opt) => setConfig({ ...config, roof: opt as typeof config.roof })}
                     renderLabel={(opt) => (
                       <>
                         <span className="text-2xl font-bold">{opt.label}</span>
@@ -139,7 +184,7 @@ export default function Configurator() {
                   <OptionGrid
                     options={FINISHES}
                     selected={config.finish.value}
-                    onSelect={(opt) => setConfig({ ...config, finish: opt })}
+                    onSelect={(opt) => setConfig({ ...config, finish: opt as typeof config.finish })}
                     renderLabel={(opt) => (
                       <>
                         <span className="text-2xl font-bold">{opt.label}</span>
@@ -149,36 +194,85 @@ export default function Configurator() {
                   />
                 )}
               </motion.div>
+            ) : sent ? (
+              <motion.div
+                key="sent"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="text-center py-12"
+              >
+                <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Icon name="Check" size={32} className="text-white" />
+                </div>
+                <p className="text-3xl font-bold text-neutral-900 mb-3">Заявка отправлена!</p>
+                <p className="text-neutral-500 mb-8">Мы свяжемся с вами в ближайшее время</p>
+                <button
+                  onClick={() => { setStep(0); setSent(false); setName(""); setPhone(""); }}
+                  className="text-sm uppercase tracking-wide text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
+                >
+                  Собрать другой дом
+                </button>
+              </motion.div>
             ) : (
               <motion.div
                 key="result"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-center py-8"
+                className="py-8"
               >
-                <p className="text-sm uppercase tracking-wide text-neutral-500 mb-4">
-                  Ваш дом
-                </p>
-                <div className="flex flex-wrap justify-center gap-4 mb-8">
-                  <Tag icon="Ruler" text={config.size.label} />
-                  <Tag icon="Building" text={config.floors.label} />
-                  <Tag icon="Home" text={config.roof.label} />
-                  <Tag icon="Paintbrush" text={config.finish.label} />
+                <div className="text-center mb-10">
+                  <p className="text-sm uppercase tracking-wide text-neutral-500 mb-4">
+                    Ваш дом
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-4 mb-8">
+                    <Tag icon="Ruler" text={config.size.label} />
+                    <Tag icon="Building" text={config.floors.label} />
+                    <Tag icon="Home" text={config.roof.label} />
+                    <Tag icon="Paintbrush" text={config.finish.label} />
+                  </div>
+                  <p className="text-5xl sm:text-6xl font-bold text-neutral-900 mb-2 tracking-tight">
+                    {formatPrice(totalPrice)}
+                  </p>
+                  <p className="text-neutral-500 mb-10">Примерная стоимость под ключ</p>
                 </div>
-                <p className="text-5xl sm:text-6xl font-bold text-neutral-900 mb-2 tracking-tight">
-                  {formatPrice(totalPrice)}
-                </p>
-                <p className="text-neutral-500 mb-8">Примерная стоимость под ключ</p>
-                <button className="bg-neutral-900 text-white px-8 py-4 text-sm uppercase tracking-wide hover:bg-neutral-700 transition-colors duration-300 cursor-pointer">
-                  Получить точный расчёт
-                </button>
+
+                <div className="max-w-md mx-auto">
+                  <p className="text-lg font-semibold text-neutral-900 mb-4 text-center">
+                    Оставьте контакты — мы сделаем точный расчёт
+                  </p>
+                  <div className="flex flex-col gap-4">
+                    <input
+                      type="text"
+                      placeholder="Ваше имя"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 outline-none transition-colors"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Телефон"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 outline-none transition-colors"
+                    />
+                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    <button
+                      onClick={handleSubmit}
+                      disabled={sending}
+                      className="bg-neutral-900 text-white px-8 py-4 text-sm uppercase tracking-wide hover:bg-neutral-700 transition-colors duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {sending ? "Отправляем..." : "Получить точный расчёт"}
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {step < STEPS.length && (
+        {step < totalSteps && (
           <div className="flex justify-between mt-8">
             <button
               onClick={prev}
@@ -191,12 +285,12 @@ export default function Configurator() {
               onClick={next}
               className="bg-neutral-900 text-white px-6 py-3 text-sm uppercase tracking-wide hover:bg-neutral-700 transition-colors duration-300 cursor-pointer"
             >
-              {step === STEPS.length - 1 ? "Рассчитать" : "Далее"}
+              {step === totalSteps - 1 ? "Рассчитать" : "Далее"}
             </button>
           </div>
         )}
 
-        {step === STEPS.length && (
+        {step === totalSteps && !sent && (
           <div className="text-center mt-4">
             <button
               onClick={() => setStep(0)}
@@ -209,14 +303,6 @@ export default function Configurator() {
       </div>
     </section>
   );
-}
-
-interface OptionItem {
-  value: string | number;
-  label: string;
-  description: string;
-  price?: number;
-  modifier?: number;
 }
 
 function OptionGrid({
@@ -257,3 +343,5 @@ function Tag({ icon, text }: { icon: string; text: string }) {
     </div>
   );
 }
+
+export default Configurator;
