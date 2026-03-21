@@ -33,9 +33,12 @@ export default function Hero() {
         <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-90 mb-10">
           Каркасные дома под ключ — тепло, надёжно и в срок
         </p>
-        <button className="border border-white text-white px-8 py-3 uppercase tracking-wide text-sm hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
+        <a
+          href="#configurator"
+          className="inline-block border border-white text-white px-8 py-3 uppercase tracking-wide text-sm hover:bg-white hover:text-black transition-all duration-300 cursor-pointer"
+        >
           Рассчитать стоимость
-        </button>
+        </a>
       </div>
     </div>
   );
