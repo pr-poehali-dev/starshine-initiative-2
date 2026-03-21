@@ -18,10 +18,10 @@ const TYPES = [
 ];
 
 const SIZES = [
-  { value: 60, label: "60 м²", description: "Компактная", price: 1800000 },
-  { value: 90, label: "90 м²", description: "Оптимальная", price: 2700000 },
-  { value: 120, label: "120 м²", description: "Просторная", price: 3600000 },
-  { value: 150, label: "150 м²", description: "Большая", price: 4500000 },
+  { value: 20, label: "20 м²", description: "Компактная", price: 1800000 },
+  { value: 40, label: "40 м²", description: "Оптимальная", price: 2700000 },
+  { value: 60, label: "60 м²", description: "Просторная", price: 3600000 },
+  { value: 100, label: "100 м²", description: "Большая", price: 4500000 },
 ];
 
 const FLOORS = [
