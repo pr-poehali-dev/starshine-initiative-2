@@ -4,17 +4,24 @@ import Icon from "@/components/ui/icon";
 import funcUrls from "../../backend/func2url.json";
 
 const STEPS = [
-  { id: "size", title: "Площадь дома" },
+  { id: "type", title: "Тип постройки" },
+  { id: "size", title: "Площадь" },
   { id: "floors", title: "Этажность" },
   { id: "roof", title: "Тип крыши" },
   { id: "finish", title: "Отделка" },
 ];
 
+const TYPES = [
+  { value: "house", label: "Дом", description: "Жилой каркасный дом", modifier: 1.0, icon: "Home" },
+  { value: "bath", label: "Баня", description: "Каркасная баня", modifier: 0.7, icon: "Flame" },
+  { value: "dacha", label: "Дача", description: "Дачный домик", modifier: 0.75, icon: "Trees" },
+];
+
 const SIZES = [
-  { value: 60, label: "60 м²", description: "Компактный", price: 1800000 },
-  { value: 90, label: "90 м²", description: "Оптимальный", price: 2700000 },
-  { value: 120, label: "120 м²", description: "Просторный", price: 3600000 },
-  { value: 150, label: "150 м²", description: "Большой", price: 4500000 },
+  { value: 60, label: "60 м²", description: "Компактная", price: 1800000 },
+  { value: 90, label: "90 м²", description: "Оптимальная", price: 2700000 },
+  { value: 120, label: "120 м²", description: "Просторная", price: 3600000 },
+  { value: 150, label: "150 м²", description: "Большая", price: 4500000 },
 ];
 
 const FLOORS = [
@@ -45,11 +52,13 @@ interface OptionItem {
   description: string;
   price?: number;
   modifier?: number;
+  icon?: string;
 }
 
 export default function Configurator() {
   const [step, setStep] = useState(0);
   const [config, setConfig] = useState({
+    type: TYPES[0],
     size: SIZES[1],
     floors: FLOORS[0],
     roof: ROOFS[0],
@@ -63,6 +72,7 @@ export default function Configurator() {
 
   const totalPrice =
     config.size.price *
+    config.type.modifier *
     config.floors.modifier *
     config.roof.modifier *
     config.finish.modifier;
@@ -85,6 +95,7 @@ export default function Configurator() {
         body: JSON.stringify({
           name: name.trim(),
           phone: phone.trim(),
+          type: config.type.label,
           size: config.size.label,
           floors: config.floors.label,
           roof: config.roof.label,
@@ -101,14 +112,16 @@ export default function Configurator() {
     }
   };
 
+  const buildingLabel = config.type.value === "house" ? "постройку" : config.type.value === "bath" ? "баню" : "дачу";
+
   return (
     <section className="bg-neutral-100 py-16 sm:py-24 px-6" id="configurator">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 mb-3 tracking-tight">
-          Соберите свой дом
+          Рассчитайте стоимость
         </h2>
         <p className="text-neutral-500 mb-10 text-lg">
-          4 шага — и вы узнаете примерную стоимость
+          5 шагов — и вы узнаете примерную стоимость
         </p>
 
         <div className="flex gap-2 mb-10">
@@ -139,6 +152,21 @@ export default function Configurator() {
 
                 {step === 0 && (
                   <OptionGrid
+                    options={TYPES}
+                    selected={config.type.value}
+                    onSelect={(opt) => setConfig({ ...config, type: opt as typeof config.type })}
+                    renderLabel={(opt) => (
+                      <>
+                        <Icon name={opt.icon || "Home"} size={28} className="mb-2 text-neutral-700" />
+                        <span className="text-2xl font-bold">{opt.label}</span>
+                        <span className="text-neutral-500">{opt.description}</span>
+                      </>
+                    )}
+                  />
+                )}
+
+                {step === 1 && (
+                  <OptionGrid
                     options={SIZES}
                     selected={config.size.value}
                     onSelect={(opt) => setConfig({ ...config, size: opt as typeof config.size })}
@@ -146,13 +174,13 @@ export default function Configurator() {
                       <>
                         <span className="text-2xl font-bold">{opt.label}</span>
                         <span className="text-neutral-500">{opt.description}</span>
-                        <span className="text-sm text-neutral-400 mt-1">от {formatPrice(opt.price || 0)}</span>
+                        <span className="text-sm text-neutral-400 mt-1">от {formatPrice((opt.price || 0) * config.type.modifier)}</span>
                       </>
                     )}
                   />
                 )}
 
-                {step === 1 && (
+                {step === 2 && (
                   <OptionGrid
                     options={FLOORS}
                     selected={config.floors.value}
@@ -166,7 +194,7 @@ export default function Configurator() {
                   />
                 )}
 
-                {step === 2 && (
+                {step === 3 && (
                   <OptionGrid
                     options={ROOFS}
                     selected={config.roof.value}
@@ -180,7 +208,7 @@ export default function Configurator() {
                   />
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
                   <OptionGrid
                     options={FINISHES}
                     selected={config.finish.value}
@@ -211,7 +239,7 @@ export default function Configurator() {
                   onClick={() => { setStep(0); setSent(false); setName(""); setPhone(""); }}
                   className="text-sm uppercase tracking-wide text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
                 >
-                  Собрать другой дом
+                  Рассчитать снова
                 </button>
               </motion.div>
             ) : (
@@ -224,9 +252,10 @@ export default function Configurator() {
               >
                 <div className="text-center mb-10">
                   <p className="text-sm uppercase tracking-wide text-neutral-500 mb-4">
-                    Ваш дом
+                    Ваша {buildingLabel}
                   </p>
                   <div className="flex flex-wrap justify-center gap-4 mb-8">
+                    <Tag icon={config.type.icon || "Home"} text={config.type.label} />
                     <Tag icon="Ruler" text={config.size.label} />
                     <Tag icon="Building" text={config.floors.label} />
                     <Tag icon="Home" text={config.roof.label} />
@@ -343,4 +372,3 @@ function Tag({ icon, text }: { icon: string; text: string }) {
     </div>
   );
 }
-
