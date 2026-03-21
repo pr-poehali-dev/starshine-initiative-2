@@ -344,4 +344,3 @@ function Tag({ icon, text }: { icon: string; text: string }) {
   );
 }
 
-export default Configurator;
