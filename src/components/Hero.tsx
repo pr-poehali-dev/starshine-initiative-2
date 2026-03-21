@@ -31,7 +31,7 @@ export default function Hero() {
           TOYSTROY
         </h1>
         <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-90 mb-10">
-          Каркасные дома под ключ — тепло, надёжно и в срок
+          Каркасные дома, бани и дачи под ключ — тепло, надёжно и в срок
         </p>
         <a
           href="#configurator"
