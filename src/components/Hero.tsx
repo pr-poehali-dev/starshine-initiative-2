@@ -28,7 +28,7 @@ export default function Hero() {
 
       <div className="relative z-10 text-center text-white px-6">
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-none">
-          СТРОИМ<br />ВАШ ДОМ
+          КАРКАСДОМ<br />TOYSTROY
         </h1>
         <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-90 mb-10">
           Каркасные дома под ключ — тепло, надёжно и в срок
