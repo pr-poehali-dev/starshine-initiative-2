@@ -9,7 +9,7 @@ export default function Promo() {
       label: "Каркасная баня",
     },
     {
-      img: "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/09bed916-d8be-4985-9a36-57cb174b9fea.jpg",
+      img: "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/5512d57a-846e-48c7-b56a-a988f76c411c.jpg",
       label: "Дача",
     },
   ];
