@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 
 const HOUSE_IMAGES = [
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/c33d56b2-d3ad-4770-9124-314909aa8be6.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/4432e9fc-aad5-49a3-a41e-a9a974cd3b05.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/a1fe31e3-d997-4f65-b2f3-c2c324427baa.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/eb2ff9e6-b6db-47b6-b530-ed5a71602d79.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/287fac50-e9d2-44de-b7f1-d0dd0596ba28.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/58079e80-65a7-451c-bf4d-3d0b81e71f5a.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/0fd454e4-58a9-47a5-9fc6-3f1fdddff95b.jpg",
-  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/dc58ab2d-4e67-4b58-9322-19fa4f8b03a0.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/c490ccea-1de2-4595-805b-f1d1c8a3c1e9.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/04999c34-7f9f-41f5-944a-0e49feb0e6cd.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/0b228348-d08b-49b6-8206-10ffbf2d4aa3.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/806b4c13-0303-4bd8-82e7-124a2806d677.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/0621049a-1371-4c82-a22a-bd5b69c9c0af.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/1c3387e0-1205-412a-a2ed-652b2ccad436.jpg",
+  "https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/0870763a-6e47-47f7-b9db-ec686642d805.jpg",
 ];
 
 function ImageCarousel({ images, label }: { images: string[]; label: string }) {
