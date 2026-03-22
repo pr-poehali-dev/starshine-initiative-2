@@ -189,7 +189,41 @@ export default function Configurator() {
                   />
                 )}
 
-                {step === 1 && (
+                {step === 1 && config.type.value === "dacha" && (
+                  <div className="flex flex-col gap-6">
+                    <div className="bg-white rounded-2xl p-6 border-2 border-neutral-900">
+                      <div className="flex justify-between items-end mb-4">
+                        <span className="text-neutral-500 text-sm">Площадь</span>
+                        <span className="text-3xl font-bold text-neutral-900">{config.size.value} м²</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={20}
+                        max={150}
+                        step={1}
+                        value={config.size.value as number}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          const pricePerSqm = 1800000 / 30;
+                          setConfig({
+                            ...config,
+                            size: { value: val, label: `${val} м²`, description: "Произвольная", price: Math.round(pricePerSqm * val) },
+                          });
+                        }}
+                        className="w-full accent-neutral-900 cursor-pointer"
+                      />
+                      <div className="flex justify-between text-xs text-neutral-400 mt-1">
+                        <span>20 м²</span>
+                        <span>150 м²</span>
+                      </div>
+                    </div>
+                    <div className="text-center text-neutral-500 text-sm">
+                      Примерная стоимость от <span className="font-semibold text-neutral-800">{formatPrice(config.size.price! * config.type.modifier)}</span>
+                    </div>
+                  </div>
+                )}
+
+                {step === 1 && config.type.value !== "dacha" && (
                   <OptionGrid
                     options={getSizes(String(config.type.value))}
                     selected={config.size.value}
