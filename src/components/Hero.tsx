@@ -19,8 +19,8 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full"
       >
         <img
-          src="https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/files/9533cdc3-c133-43cf-90fc-9c8b6b8cb754.jpg"
-          alt="Строительство каркасного дома"
+          src="https://cdn.poehali.dev/projects/58090770-2d8b-411b-ae58-ea3d1f85128a/bucket/0ca3f6b0-7ec4-4acf-a97f-1a331119dd1f.png"
+          alt="ToyStroy — каркасные дома, дачи, бани"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
